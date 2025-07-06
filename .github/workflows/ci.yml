@@ -3,7 +3,7 @@ name : Train Boston model and upload artifact
 on:
   push:
     branches: 
-      - integration
+      - deployment
 
 jobs:
   train-and-upload:
@@ -31,3 +31,26 @@ jobs:
           name: models
           path: artifacts/
   
+
+  deploy-artifacts:
+    runs-on: ubuntu-latest
+    needs: train-and-upload
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.5'
+
+      - name: Installing dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download model artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: models
+          path: artifacts/
+
+      - name: Inference
+        run: python inference.py
