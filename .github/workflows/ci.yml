@@ -1,0 +1,33 @@
+name : Train Boston model and upload artifact
+
+on:
+  push:
+    branches: 
+      - integration
+
+jobs:
+  train-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.5'
+
+      - name: Installing dependencies
+        run: pip install -r requirements.txt
+
+      - name: Train and Eval
+        run: | 
+          mkdir -p artifacts/
+          python train.py
+
+      - name: Upload the artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: models
+          path: artifacts/
+  
